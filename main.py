@@ -239,15 +239,20 @@ def send_telegram_message(message, parse_mode='HTML'):
         return False
 
 def start_telegram_bot():
-    """Start the Telegram bot in a separate thread"""
     if telegram_app:
         logger.info("Starting Telegram command handlers...")
         try:
-            # Run the bot in a separate thread
             def run_bot():
-                asyncio.set_event_loop(asyncio.new_event_loop())
-                telegram_app.run_polling(drop_pending_updates=True)
-            
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                async def start():
+                    await telegram_app.initialize()
+                    await telegram_app.start()
+                    await telegram_app.updater.start_polling(
+                        drop_pending_updates=True
+                    )
+                loop.run_until_complete(start())
+                loop.run_forever()
             bot_thread = threading.Thread(target=run_bot, daemon=True)
             bot_thread.start()
             logger.info("Telegram bot polling started")
