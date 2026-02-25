@@ -286,15 +286,10 @@ class IVASMSScraper:
             return False
 
 def create_scraper(email, password):
-    """Factory function to create and test scraper"""
     scraper = IVASMSScraper(email, password)
-    
-    if not scraper.test_connection():
-        print("Warning: Cannot connect to IVASMS.com")
-        return None
-    
+    print("Skipping connection test - attempting direct login")
     return scraper
-
+    
 # Demo/test function
 def test_scraper():
     """Test the scraper with dummy data"""
